@@ -1,0 +1,34 @@
+const fs = require('fs');
+
+// Read the list of users and companies from files
+const users = require('./users.json');
+const companies = require('./companies.json');
+
+// Filter active users belonging to a company
+const activeUsers = users.filter(user => user.active_status && companies.some(company => company.id === user.company_id));
+
+// Sort users alphabetically by last name
+activeUsers.sort((a, b) => a.last_name.localeCompare(b.last_name));
+
+// Generate the output result
+const outputContent = activeUsers.map(user => {
+  const company = companies.find(c => c.id === user.company_id);
+  let output = `${user.last_name}, ${user.first_name}:`;
+
+  // Check if the user's company has email status true and user's email status is true
+  if (company.email_status && user.email_status) {
+    output += ` Email sent - Token Top Up: ${company.top_up}`;
+  } else {
+    output += ` Token Top Up: ${company.top_up}`;
+  }
+
+  return output;
+}).join('\n');
+
+// Write the output result to the output.txt file
+fs.writeFile('output.txt', outputContent, err => {
+  if (err) {
+    console.error('Error writing to output file:', err);
+  } else {
+    console.log('Output file generated successfully!');
+  }
